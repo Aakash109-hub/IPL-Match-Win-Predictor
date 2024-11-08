@@ -1,191 +1,60 @@
-# IPL Win Probability Predictor
+# IPL Match Win Probability Predictor
 
-![Screenshot 2024-10-15 231254](https://github.com/user-attachments/assets/7196a303-52f1-49e9-877e-98c10d8afeef)
+This web application predicts win probabilities for IPL (Indian Premier League) teams in real-time using a machine learning model. The model leverages historical match data to estimate the likelihood of winning for both the batting and bowling teams based on current match dynamics.
 
-This project predicts the probability of an IPL team's victory during a match based on the current state of the game. The model uses historical IPL match data to generate real-time win probabilities for a given scenario.
+**Live App**: [IPL Win Probability Predictor on Render](https://ipl-matchwinpedicter-ak109.onrender.com)
 
-## Table of Contents
-1. [Project Overview](#project-overview)
-2. [Features](#features)
-3. [Installation](#installation)
-4. [Usage](#usage)
-5. [Model Training](#model-training)
-6. [Streamlit Web App](#streamlit-web-app)
-7. [Project Structure](#project-structure)
-8. [Future Improvements](#future-improvements)
+![Screenshot 2024-11-08 124216](https://github.com/user-attachments/assets/fbcd9acf-7038-4adb-8fd4-d2998100200c)
+
+
+---
 
 ## Project Overview
 
-The IPL Win Probability Predictor is built using **Logistic Regression** to classify the likelihood of a team winning at any point during the match. The model takes the following input:
-- Batting team
-- Bowling team
-- Host city
-- Current score
-- Overs completed
-- Wickets lost
-- Target runs
+The IPL Win Probability Predictor is useful for cricket fans and analysts who want to track a match's likely outcome as it progresses. The model is trained using logistic regression, a popular classification technique suited for probability prediction in sports analytics.
 
-It outputs the win probability of the batting team and the probability of the bowling team preventing a win.
+### Features
+- **Team Selection**: Choose the batting and bowling teams.
+- **Match Location**: Select the city where the match is being held.
+- **Match Stats Input**: Enter key details like target score, current score, overs completed, and wickets lost.
+- **Prediction**: Calculates win probabilities for both teams.
 
-## Features
-- **Real-time match prediction**: Enter current match data and receive probabilities for both teams.
-- **Interactive web app**: A user-friendly interface built with **Streamlit** to enter inputs and display predictions.
-- **Model pipeline**: The model is built using **Scikit-learn** with preprocessing steps for categorical and numerical features.
+---
 
-## Installation
+## How to Use Locally
 
-To run this project, you'll need to install the required dependencies. Follow the steps below:
+1. **Install Dependencies**:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-### 1. Clone the repository
+2. **Run the App**:
+    ```bash
+    streamlit run app.py
+    ```
 
-```bash
-git clone https://github.com/Aakash109-hub/IPL-Match-Win-Predictor.git
-cd IPL-Match-Win-Predictor
-```
+---
 
-### 2. Set up a virtual environment (optional but recommended)
+## Machine Learning Model
 
-```bash
-python -m venv venv
-source venv/bin/activate  # For Windows: venv\Scripts\activate
-```
+The model was developed using **logistic regression**, which is effective for binary classification tasks. Logistic regression predicts probabilities, which fits well for this application where the output is the likelihood of winning for each team.
 
-### 3. Install dependencies
+### Model Details
+- **Algorithm**: Logistic Regression
+- **Training Data**: Historical IPL match data
+- **Features**: Includes current score, wickets fallen, target score, current run rate (CRR), and required run rate (RRR)
 
-```bash
-pip install -r requirements.txt
-```
+---
 
-### 4. Download the model
+## Deployment
 
-Ensure that the trained model file `pipe.pkl` is in the root directory of the project. If the model file is not available, follow the [Model Training](#model-training) steps below.
+This project is deployed on Render. You can access the live application here:  
+https://ipl-matchwinpedicter-ak109.onrender.com
 
-## Usage
+---
 
-### Running the Streamlit Web App
+## Files
 
-1. Open a terminal or command prompt.
-2. Navigate to the project directory.
-3. Run the following command to start the Streamlit web app:
-
-```bash
-streamlit run app.py
-```
-
-4. The web app will open in your default browser. Enter the required match data to get win probabilities for both teams.
-
-## Model Training
-
-If you need to train the model, follow these steps:
-
-1. **Preprocess the data**: The training data should include categorical features (`batting_team`, `bowling_team`, `city`) and numerical features (e.g., `runs_left`, `balls_left`, `wickets`, `total_runs_x`, `crr`, `rrr`).
-
-2. **Model Pipeline**: The model is built using a Scikit-learn pipeline. The categorical data is encoded using `OneHotEncoder`, and `LogisticRegression` is used for training. 
-
-```python
-from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
-from sklearn.linear_model import LogisticRegression
-from sklearn.pipeline import Pipeline
-from sklearn.model_selection import train_test_split
-
-# Column Transformer for preprocessing
-preprocessor = ColumnTransformer(
-    transformers=[
-        ('cat', OneHotEncoder(drop='first'), ['batting_team', 'bowling_team', 'city']),
-        ('num', StandardScaler(), ['runs_left', 'balls_left', 'wickets', 'total_runs_x', 'crr', 'rrr'])
-    ], remainder='passthrough'
-)
-
-# Model pipeline
-pipe = Pipeline(steps=[
-    ('preprocessor', preprocessor),
-    ('classifier', LogisticRegression(solver='liblinear'))
-])
-
-# Train the model
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-pipe.fit(X_train, y_train)
-
-# Save the model
-import pickle
-pickle.dump(pipe, open('pipe.pkl', 'wb'))
-```
-
-3. **Save the model**: The trained model is saved as `pipe.pkl` and used in the Streamlit web app.
-
-## Streamlit Web App
-
-The web app is built using **Streamlit**. The user can input current match details (teams, score, overs, etc.), and the app will return the predicted probabilities for both teams.
-
-### Key Components of the App:
-- `selectbox`: For team and city selection.
-- `number_input`: For entering numerical values like target, score, overs, and wickets.
-- `button`: A button to trigger the prediction function.
-
-### Example Code Snippet from `app.py`
-
-```python
-import streamlit as st
-import pickle
-import pandas as pd
-
-# Load the trained model
-pipe = pickle.load(open('pipe.pkl','rb'))
-
-# User input fields
-teams = [...]
-cities = [...]
-
-batting_team = st.selectbox('Select the batting team', sorted(teams))
-bowling_team = st.selectbox('Select the bowling team', sorted(teams))
-city = st.selectbox('Select the host city', sorted(cities))
-target = st.number_input('Target')
-score = st.number_input('Current Score')
-overs = st.number_input('Overs completed')
-wickets = st.number_input('Wickets fallen')
-
-# Calculate derived features
-runs_left = target - score
-balls_left = 120 - (overs * 6)
-wickets_left = 10 - wickets
-crr = score / overs
-rrr = (runs_left * 6) / balls_left
-
-# Create input DataFrame
-input_df = pd.DataFrame({
-    'batting_team': [batting_team],
-    'bowling_team': [bowling_team],
-    'city': [city],
-    'runs_left': [runs_left],
-    'balls_left': [balls_left],
-    'wickets': [wickets_left],
-    'total_runs_x': [target],
-    'crr': [crr],
-    'rrr': [rrr]
-})
-
-# Predict the probability
-if st.button('Predict'):
-    result = pipe.predict_proba(input_df)
-    win_prob = result[0][1]
-    st.header(f"{batting_team} win probability: {win_prob*100:.2f}%")
-```
-
-## Project Structure
-
-```bash
-ipl-win-predictor/
-│
-├── app.py                  # Streamlit web app code
-├── model_training.ipynb     # Jupyter notebook for model training
-├── pipe.pkl                 # Trained model (pickle file)
-├── requirements.txt         # Dependencies
-└── README.md                # Project documentation (this file)
-```
-
-## Future Improvements
-
-- **Model Performance**: Experiment with more advanced models (e.g., XGBoost, Random Forest) for potentially better accuracy.
-- **Additional Features**: Add more features like weather conditions or team strength based on player stats.
-- **Dynamic Updates**: Incorporate real-time data updates using APIs for live match prediction.
+- **app.py**: Streamlit app code.
+- **pipe1.pkl**: Pre-trained logistic regression model file.
+- **requirements.txt**: Lists required Python packages.
