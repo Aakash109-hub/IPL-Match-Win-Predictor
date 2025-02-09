@@ -1,6 +1,6 @@
 # IPL Match Win Probability Predictor
 
-This web application predicts win probabilities for IPL (Indian Premier League) teams in real-time using a machine learning model. The model leverages historical match data to estimate the likelihood of winning for both the batting and bowling teams based on current match dynamics
+This web application predicts win probabilities for IPL (Indian Premier League) teams in real-time using a machine learning model. The model leverages historical match data to estimate the likelihood of winning for both the batting and bowling teams based on current match dynamics.
 
 **Live App**: [IPL Win Probability Predictor on Render](https://ipl-matchwinpedicter-ak109.onrender.com)
 
